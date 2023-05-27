@@ -1,0 +1,92 @@
+{% extends 'layout.html' %}
+
+{% block title %} Система управления посещениями {% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <h2 class="py-4">Панель управления "Преподаватель"<h2>
+        </div>
+        <div class="col-3">
+            <form action="/search" method="POST">
+                <div class="form-group">
+                    <input type="text" value="{{student_firstname}}" id="student_lastname" class="form-control" name="student_lastname" placeholder="Фамилия">
+                </div>
+                <div class="form-group">
+                    <input type="text" value="{{student_middlename}}" id="student_firstname" class="form-control" name="student_firstname" placeholder="Имя">
+                </div>
+                <div class="form-group">
+                    <input type="text" value="{{student_lastname}}" id="student_middlename" class="form-control" name="student_middlename" placeholder="Отчество">
+                </div>
+                <div class="form-group">
+                    <input type="text" value="{{date_of_birth}}" id="student_dateofbirth" class="form-control" name="student_dateofbirth" placeholder="Дата рождения">
+                </div>
+                <div class="form-group">
+                    <select class="form-control" name="student_town">
+                        <option selected disabled>Выберите город</option>
+                        {% for town in towns %}
+                            <option value="{{town[0]}}">{{town[1]}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select class="form-control" name="student_school">
+                        <option selected disabled>Выберите школу</option>
+                        {% for school in schools %}
+                            <option value="{{school[0]}}">{{school[1]}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select class="form-control" name="student_class">
+                        <option selected disabled>Выберите класс</option>
+                        {% for class in classes %}
+                            <option value="{{class[0]}}">{{class[1]}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" value="{{salt}}" id="salt" class="form-control" name="salt" placeholder="Соль">
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-info btn-block" value="Поиск">
+                </div>
+            </form>
+        </div>
+        <div class="col-9">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <!--<th scope="col">#</th>-->
+                        <th scope="col">Хеш</th>
+                        <th scope="col">Дата рождения</th>
+                        <th scope="col">Город</th>
+                        <th scope="col">Школа</th>
+                        <th scope="col">Класс</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            <tr>
+                                <!--<th scope="row"><input id="student_{{ student[0] }}" name="student_{{ student[0] }}" value="{{ student[0] }}" type="checkbox" id="checkbox{{ student[0] }}"></th>-->
+                                <td>
+                                    <label class="hashLabel" title="{{ student[2] }}" for="checkbox{{ student[0] }}">
+                                        {% if student[2] %}
+                                            <a href="/student?hash={{ student[2] }}">{{ student[2] | truncate(12) }}</a>
+                                        {% else %}
+                                            не назначено
+                                        {% endif %}
+                                    </label>
+                                </td>
+                                <td>{{ student[1] }}</td>
+                                <td>{{ student[3] }}</td>
+                                <td>{{ student[4] }}</td>
+                                <td>{{ student[5] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

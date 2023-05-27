@@ -1,0 +1,55 @@
+{% extends 'layout.html' %}
+
+{% block title %} Система управления посещениями {% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <h2 class="py-4">Панель администрирования<h2>
+        </div>
+        <div class="col-12">
+            {% if successful %}
+                <h2 class="text-success pb-4">Хеш успешно сгенерирован!</h2>
+                <h4 class="pb-4"><a class="text-info" href="/download_hashes?file_path={{ file_path }}">Скачать файл с хешами</a></h4>
+            {% endif %}
+        </div>
+        <div class="col-12 col-md-3">
+            <form id="hashForm" method="POST">
+                <div class="form-group">
+                    <input type="text" id="salt" class="form-control" name="salt" placeholder="Соль">
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-info btn-block" value="Получить хеш">
+                </div>
+            </form>
+        </div>
+        <div class="col-12 col-md-9">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">ФИО</th>
+                        <th scope="col">Дата рождения</th>
+                        <th scope="col">Город</th>
+                        <th scope="col">Школа</th>
+                        <th scope="col">Класс</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            <tr>
+                                <th scope="row"><input id="student_{{ student[0] }}" name="student_{{ student[0] }}" value="{{ student[0] }}" type="checkbox" id="checkbox{{ student[0] }}"></th>
+                                <td><label for="student_{{ student[0] }}">{{ student[2] }} {{ student[3] }} {{ student[4] }}</label></td>
+                                <td>{{ student[5] }}</td>
+                                <td>{{ student[1] }}</td>
+                                <td>{{ student[6] }}</td>
+                                <td>{{ student[7] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src='/static/js/main.js'></script>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends 'layout.html' %}
+
+{% block title %} Система управления посещениями {% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <h2 class="py-4">Журнал посещений учеников<h2>
+        </div>
+        <div class="col-2">
+            <form method="GET">
+                <div class="form-group">
+                    <input type="text" value="{{student_firstname}}" id="student_lastname" class="form-control" name="student_lastname" placeholder="Фамилия">
+                </div>
+                <div class="form-group">
+                    <input type="text" value="{{student_middlename}}" id="student_firstname" class="form-control" name="student_firstname" placeholder="Имя">
+                </div>
+                <div class="form-group">
+                    <input type="text" value="{{student_lastname}}" id="student_middlename" class="form-control" name="student_middlename" placeholder="Отчество">
+                </div>
+                <div class="form-group">
+                    <input type="text" value="{{date_of_birth}}" id="student_dateofbirth" class="form-control" name="student_dateofbirth" placeholder="Дата рождения">
+                </div>
+                <div class="form-group">
+                    <select class="form-control mb-4" name="semester">
+                        <option selected disabled>Четверть</option>
+                        <option value="1">1-я четверть</option>
+                        <!-- <option value="2">2-я четверть</option> -->
+                    </select>
+                    <select class="form-control my-4" name="week">
+                        <option selected disabled>Неделя</option>
+                        {% for week in weeks %}
+                        <option value="{{ week[0] }}">{{ week[0] }}-ая неделя</option>
+                        {% endfor %}
+                    </select>
+                    <select class="form-control my-4" name="day">
+                        <option selected disabled>День</option>
+                        {% for day in days %}
+                            <option value="{{ day[0] }}">{{ day[0] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" value="{{salt}}" id="salt" class="form-control" name="salt" placeholder="Соль">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-info btn-block">Отфильтровать</button>
+                </div>
+            <form>
+        </div>
+        <div class="col-10">
+            <div class="table-responsive">
+                {% if students %}
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Хеш</th>
+                                <th scope="col">Дата</th>
+                                <th scope="col">Город</th>
+                                <th scope="col">Школа</th>
+                                <th scope="col">Класс</th>
+                                <th scope="col">Отметка о присутствии</th>
+                                <th scope="col">Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                                <tr>
+                                    <td>
+                                        <label class="hashLabel" title="{{ student[0] }}">
+                                            {% if student[0] %}
+                                                <a href="/student?hash={{ student[0] }}">{{ student[0] | truncate(12) }}</a>
+                                            {% else %}
+                                                не назначено
+                                            {% endif %}
+                                        </label>
+                                    </td>
+                                    <td>
+                                        {{ student[1] }}
+                                    </td>
+                                    <td>
+                                        {{ student[4] }}
+                                    </td>
+                                    <td>
+                                        {{ student[5] }}
+                                    </td>
+                                    <td>
+                                        {{ student[6] }}
+                                    </td>
+                                    <td>
+                                        <select data-href="href_{{ student[3] }}" class="form-control attendance-dropdown">
+                                            <option selected value="{{ student[2] }}">{{ student[2] }}</option>
+                                            <option value={% if student[2].lower() == "присутствовал" %}"Не явился"{% else %}"Присутствовал"{% endif %}>
+                                                {% if student[2].lower() == "присутствовал" %}
+                                                    Не явился
+                                                {% else %}
+                                                    Присутствовал
+                                                {% endif %}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        {% if student[0] %}
+                                            <a id="href_{{ student[3] }}" class="btn btn-primary" 
+                                                href="/set_attendance?student={{ student[3] }}&status={{ student[2] }}"
+                                            >Подтвердить</a>
+                                        {% else %}
+                                            <button class="btn btn-info" disabled>Подтвердить</button>
+                                        {% endif %}
+                                        
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <h3 class="text-info">Записи не найдены</h3>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(() => {
+            $(".attendance-dropdown").change((event) => {
+                var hrefID = event.target.attributes['data-href'].value
+                $(`#${hrefID}`).attr("href", `/set_attendance?student=${hrefID.split('_')[1]}&status=${event.currentTarget.value}`)
+            });
+        });
+    </script>
+{% endblock %}
